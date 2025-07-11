@@ -3,25 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="100dp">
+    android:padding="25dp"
+    android:gravity="center" >
 
     <Button
         android:id="@+id/buttonStart"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:text="Start Commute"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="80dp" />
 
     <Spinner
         android:id="@+id/spinnerBus"
-        android:layout_width="match_parent"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:layout_marginTop="16dp" />
 
     <Button
         android:id="@+id/buttonBoard"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:text="Board Bus"
         android:layout_marginTop="16dp" />
@@ -47,7 +48,7 @@
             android:id="@+id/buttonRed"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="32dp"
             android:backgroundTint="#D32F2F"
             android:text="R"
             android:textColor="#FFFFFF"
@@ -66,14 +67,14 @@
 
     <Button
         android:id="@+id/buttonUnboard"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:text="Unboard Bus"
         android:layout_marginTop="16dp" />
 
     <Button
         android:id="@+id/buttonEnd"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:text="End Commute"
         android:layout_marginTop="16dp" />
@@ -81,17 +82,17 @@
     <ScrollView
         android:id="@+id/scrollViewLog"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="8dp">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1">
 
         <TextView
             android:id="@+id/textViewLog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="8dp"
             android:text="Commute log will appear here"
-            android:textSize="16sp"
-            android:padding="8dp" />
+            android:textSize="16sp" />
     </ScrollView>
 
 </LinearLayout>

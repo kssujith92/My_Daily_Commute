@@ -2,6 +2,7 @@ package com.example.mycommute
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.*
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupSpinner() {
-        val busOptions = arrayOf("Bus 179", "Bus 180")
+        val busOptions = arrayOf("Bus 179", "Bus 179A", "Bus 180")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, busOptions)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         busSpinner.adapter = adapter
@@ -230,6 +231,9 @@ class MainActivity : AppCompatActivity() {
         csvBuilder.append("\n")
         file.appendText(csvBuilder.toString())
 
+        val exportFile = File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "commute_log.csv")
+        file.copyTo(exportFile, overwrite = true)
+
         Toast.makeText(this, "Log saved to ${file.absolutePath}", Toast.LENGTH_LONG).show()
     }
 
@@ -257,6 +261,10 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_history -> {
                 startActivity(Intent(this, HistoryActivity::class.java))
+                true
+            }
+            R.id.action_statistics -> {
+                startActivity(Intent(this, StatsActivity::class.java))
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -6,4 +6,11 @@
         android:orderInCategory="100"
         android:showAsAction="always"
         android:icon="@android:drawable/ic_menu_info_details" />
+
+    <item
+        android:id="@+id/action_statistics"
+        android:title="Statistics"
+        android:orderInCategory="101"
+        android:showAsAction="always"
+        android:icon="@android:drawable/ic_menu_manage" />
 </menu>
