@@ -11,6 +11,8 @@ import androidx.core.content.ContextCompat
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         initState()
         setupSpinner()
         setupListeners()
+        restoreCommuteState()
     }
 
     private fun bindViews() {
@@ -75,12 +78,14 @@ class MainActivity : AppCompatActivity() {
     private fun setupListeners() {
         startButton.setOnClickListener {
             startTime = System.currentTimeMillis()
+            endTime = 0L
             segments.clear()
             currentSegment = null
             startButton.isEnabled = false
             endButton.isEnabled = true
             boardButton.isEnabled = true
             updateLog()
+            saveCommuteState()
         }
 
         boardButton.setOnClickListener {
@@ -95,6 +100,7 @@ class MainActivity : AppCompatActivity() {
             redButton.isEnabled = true
             redButton.alpha = 1f
             updateLog()
+            saveCommuteState()
         }
 
         unboardButton.setOnClickListener {
@@ -107,6 +113,7 @@ class MainActivity : AppCompatActivity() {
             redButton.alpha = 0.5f
             greenButton.alpha = 0.5f
             updateLog()
+            saveCommuteState()
         }
 
         redButton.setOnClickListener {
@@ -117,6 +124,7 @@ class MainActivity : AppCompatActivity() {
             greenButton.alpha = 1f
             redButton.alpha = 0.5f
             updateLog()
+            saveCommuteState()
         }
 
         greenButton.setOnClickListener {
@@ -127,6 +135,7 @@ class MainActivity : AppCompatActivity() {
             redButton.alpha = 1f
             greenButton.alpha = 0.5f
             updateLog()
+            saveCommuteState()
         }
 
         endButton.setOnClickListener {
@@ -141,6 +150,7 @@ class MainActivity : AppCompatActivity() {
             greenButton.alpha = 0.5f
             updateLog()
             appendDetailedCommuteCsv()
+            getSharedPreferences("commute", MODE_PRIVATE).edit().clear().apply()
         }
     }
 
@@ -251,6 +261,82 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun escapeCsv(value: String): String = if (value.contains(",") || value.contains(";")) "\"$value\"" else value
+
+    private fun saveCommuteState() {
+        val shared = getSharedPreferences("commute", MODE_PRIVATE)
+        val json = Gson().toJson(segments)
+        shared.edit().putLong("startTime", startTime)
+            .putString("segments", json)
+            .apply()
+    }
+
+    private fun restoreCommuteState() {
+        val shared = getSharedPreferences("commute", MODE_PRIVATE)
+        startTime = shared.getLong("startTime", 0L)
+        val json = shared.getString("segments", null)
+        if (startTime > 0 && json != null) {
+            val type = object : TypeToken<MutableList<CommuteSegment>>() {}.type
+            segments.clear()
+            segments.addAll(Gson().fromJson(json, type))
+            currentSegment = segments.lastOrNull { it.unboardTime == null }
+            updateLog()
+            restoreUiState()
+        }
+    }
+
+    private fun restoreUiState() {
+        val commuteInProgress = startTime > 0 && endTime == 0L
+
+        startButton.isEnabled = !commuteInProgress
+        endButton.isEnabled = commuteInProgress
+
+        if (!commuteInProgress) {
+            boardButton.isEnabled = false
+            unboardButton.isEnabled = false
+            redButton.isEnabled = false
+            greenButton.isEnabled = false
+            redButton.alpha = 0.5f
+            greenButton.alpha = 0.5f
+            return
+        }
+
+        // Commute in progress
+        if (currentSegment == null || currentSegment?.unboardTime != null) {
+            // No active segment
+            boardButton.isEnabled = true
+            unboardButton.isEnabled = false
+            redButton.isEnabled = false
+            greenButton.isEnabled = false
+        } else {
+            // Currently on a bus
+            boardButton.isEnabled = false
+            unboardButton.isEnabled = true
+
+            val lastStop = currentSegment?.stopEvents?.lastOrNull()
+            when (lastStop?.type) {
+                "Red Light" -> {
+                    redButton.isEnabled = false
+                    greenButton.isEnabled = true
+                    redButton.alpha = 0.5f
+                    greenButton.alpha = 1f
+                }
+                "Green Light" -> {
+                    redButton.isEnabled = true
+                    greenButton.isEnabled = false
+                    redButton.alpha = 1f
+                    greenButton.alpha = 0.5f
+                }
+                else -> {
+                    // No stops recorded yet
+                    redButton.isEnabled = true
+                    greenButton.isEnabled = false
+                    redButton.alpha = 1f
+                    greenButton.alpha = 0.5f
+                }
+            }
+        }
+    }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)

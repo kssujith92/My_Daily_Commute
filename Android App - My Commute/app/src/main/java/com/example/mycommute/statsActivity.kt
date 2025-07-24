@@ -121,7 +121,7 @@ class StatsActivity : AppCompatActivity() {
                 val startTime = cols[4]
                 val busUnboard = cols[11]
                 commuteTime = durationBetween(startTime, busUnboard)
-                stopTimeTotal = cols[12].toIntOrNull() ?: 0
+                stopTimeTotal = cols[14].toIntOrNull() ?: 0
 
                 waitTotal = cols[8].toIntOrNull() ?: 0
 
